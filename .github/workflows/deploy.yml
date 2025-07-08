@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - main  # Change this if you're using a different branch
+      - main
 
 jobs:
   deploy:
@@ -13,11 +13,25 @@ jobs:
     - name: Connect & deploy to server
       uses: appleboy/ssh-action@v1.0.0
       with:
-        host: 16.170.167.115
-        username: root
-        key: ${{ SSH_PRIVATE_KEY }}
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /root/nginx-hello
-          git pull origin main
+          set -e
+          echo "Starting deployment..."
+          
+          # Verify Docker is running
+          docker ps || sudo service docker start
+          
+          # Navigate to project directory
+          cd /root/nginx-hello || { echo "Directory not found"; exit 1; }
+          
+          # Update code
+          git fetch origin
+          git reset --hard origin/main
+          
+          # Update containers
           docker-compose pull
           docker-compose up -d --remove-orphans
+          
+          echo "Deployment completed successfully"
