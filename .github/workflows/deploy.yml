@@ -15,7 +15,7 @@ jobs:
       with:
         host: 16.170.167.115
         username: root
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        key: ${{ SSH_PRIVATE_KEY }}
         script: |
           cd /root/nginx-hello
           git pull origin main
