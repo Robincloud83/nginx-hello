@@ -20,5 +20,5 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          echo "Successfully connected ok $(hostname)"
+          echo "Successfully connected to $(hostname)"
           exit 0
