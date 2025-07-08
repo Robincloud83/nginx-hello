@@ -2,50 +2,24 @@ name: Deploy to Server
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # Add timeout
+    timeout-minutes: 10
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Deploy to server
+    - name: Test SSH Connection
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || '22' }}
-        script_timeout: 5m
-        envs: CI=true
         script: |
-          set -e
-          echo "--- Starting Deployment ---"
-          
-          # Verify connection
-          echo "Connected as $(whoami)@$(hostname)"
-          
-          # Check Docker
-          if ! command -v docker &> /dev/null; then
-            echo "Docker not found!"
-            exit 1
-          fi
-          
-          # Navigate to the project
-          cd /root/nginx-hello || { echo "Project directory missing"; exit 1; }
-          
-          # Git operations
-          git config --global --add safe.directory /root/nginx-hello
-          git fetch origin
-          git reset --hard origin/main
-          
-          # Docker operations
-          docker-compose pull
-          docker-compose up -d --remove-orphans
-          
-          echo "--- Deployment Successful ---"
+          echo "Successfully connected to $(hostname)"
+          exit 0
